@@ -103,6 +103,8 @@ Requires Conn3x v0.6.4 or later, systemd on each host, and outbound HTTPS to git
 
 Rocky Linux 10, Fedora 45, Ubuntu 24.04 and Debian 13. CI applies [examples/local](examples/local) to each on amd64 and checks that the second plan has no changes.
 
+It was also applied by hand, with six other circuits, to an Ubuntu 24.04 droplet and a Rocky Linux 10 droplet with SELinux enforcing. On both, node_exporter ran under systemd, served metrics on port 9100, and circuit-monitoring's Prometheus scraped it through the Docker bridge. After a reboot it came back, the plan had no changes and the audit log had no SELinux denials.
+
 ## License
 
 MPL-2.0. See [LICENSE](LICENSE). node_exporter itself is Apache-2.0.
