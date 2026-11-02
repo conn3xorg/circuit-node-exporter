@@ -15,6 +15,6 @@ The second plan says `No changes.` To look at the result:
 ssh -p 2222 -i id_ed25519 -o UserKnownHostsFile=known_hosts root@127.0.0.1 curl -s localhost:9100/metrics | head
 ```
 
-`up.sh` listens on `127.0.0.1:2222`. Set `PORT` to use another port, and pass the same port to Conn3x with `-var port=PORT`. Set `CONTAINERFILE` to test another distro, such as one of the images in Conn3x's `test/images`, which CI uses.
+`up.sh` listens on `127.0.0.1:2222`, and forwards `127.0.0.1:9100` to node_exporter. Set `PORT` to use another SSH port, and pass the same port to Conn3x with `-var port=PORT`. Set `METRICS_PORT` to move the other. Set `CONTAINERFILE` to test another distro, such as one of the images in Conn3x's `test/images`, which CI uses.
 
 `./down.sh` removes the container, the key and the state.

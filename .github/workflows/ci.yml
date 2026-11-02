@@ -70,6 +70,19 @@ jobs:
           conn3x init
           conn3x apply -auto-approve
           conn3x plan -detailed-exitcode
+      # A scrape from outside the host, reading metrics only a running
+      # exporter could have collected.
+      - name: Scrape the metrics, and again after a restart
+        run: |
+          scrape() {
+            curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 5 -o metrics.txt http://127.0.0.1:9100/metrics
+            grep -q '^node_exporter_build_info{' metrics.txt
+            grep -q '^node_cpu_seconds_total{' metrics.txt
+            grep -q '^node_memory_MemTotal_bytes ' metrics.txt
+          }
+          scrape
+          podman exec circuit-node-exporter systemctl restart node_exporter
+          scrape
       - name: Clean up
         if: always()
         working-directory: examples/local
