@@ -89,7 +89,7 @@ The new release unpacks beside the old one, the unit file points at it, and the 
 | `node_exporter_version` | string | `"1.12.1"` | node_exporter release to install, without the leading `v`. |
 | `checksums` | map(string) | The 1.12.1 checksums | SHA-256 of the release tarball for `amd64` and `arm64`. |
 | `listen_port` | number | `9100` | Port node_exporter listens on, on every address. |
-| `extra_args` | list(string) | `[]` | More node_exporter flags, such as `["--collector.systemd"]`. |
+| `extra_args` | list(string) | `[]` | More node_exporter flags, such as `["--collector.systemd"]`. Each one is passed as a single argument, as written. |
 
 ## Outputs
 
