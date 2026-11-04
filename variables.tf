@@ -63,5 +63,12 @@ variable "listen_port" {
 variable "extra_args" {
   type        = list(string)
   default     = []
-  description = "More command-line flags for node_exporter, such as [\"--collector.systemd\"]."
+  description = "More command-line flags for node_exporter, such as [\"--collector.systemd\"]. Each one is passed as a single argument, as written."
+
+  # Each flag is quoted into the unit's ExecStart, which quoting can't make
+  # safe for a newline: that would start a new line of the unit.
+  validation {
+    condition     = alltrue([for a in var.extra_args : !can(regex("[\\x00-\\x1f\\x7f]", a))])
+    error_message = "extra_args can't contain newlines or other control characters."
+  }
 }
