@@ -38,6 +38,11 @@ variable "node_exporter_version" {
   type        = string
   default     = "1.12.1"
   description = "node_exporter release to install, without the leading v."
+
+  validation {
+    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?$", var.node_exporter_version))
+    error_message = "node_exporter_version is a release number without the leading v, such as \"1.12.1\"."
+  }
 }
 
 variable "checksums" {
