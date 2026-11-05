@@ -8,7 +8,7 @@ A Conn3x circuit that installs the Prometheus [node_exporter](https://github.com
 
 ```hcl
 module "node_exporter" {
-  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.1"
+  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.2"
 
   hosts = {
     web1 = "203.0.113.10"
@@ -26,7 +26,7 @@ For hosts created in the same plan, pass host objects with the host key you gene
 
 ```hcl
 module "node_exporter" {
-  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.1"
+  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.2"
 
   hosts = {
     for name, d in digitalocean_droplet.app : name => {
@@ -63,7 +63,7 @@ Set `node_exporter_version` and `checksums` together. Take both checksums from t
 
 ```hcl
 module "node_exporter" {
-  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.1"
+  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.2"
 
   hosts                 = { web1 = "203.0.113.10" }
   node_exporter_version = "1.12.1"
