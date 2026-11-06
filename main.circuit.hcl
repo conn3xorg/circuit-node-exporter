@@ -47,6 +47,16 @@ circuit "node_exporter" {
     }
   }
 
+  # mkdir would make /opt/node_exporter with the login session's umask, and
+  # under circuit-hardening's 027 the node_exporter user couldn't reach its
+  # binary.
+  step "opt_dir" {
+    directory {
+      path = "/opt/node_exporter"
+      mode = "0755"
+    }
+  }
+
   step "download" {
     download {
       url    = "https://github.com/prometheus/node_exporter/releases/download/v${var.node_exporter_version}/${local.release[each.key]}.tar.gz"
