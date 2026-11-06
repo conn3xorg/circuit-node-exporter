@@ -37,7 +37,8 @@ variable "ssh_become" {
 variable "node_exporter_version" {
   type        = string
   default     = "1.12.1"
-  description = "node_exporter release to install, without the leading v."
+  nullable    = false
+  description = "node_exporter release to install, without the leading v. Null means the default."
 
   validation {
     condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?$", var.node_exporter_version))
@@ -47,7 +48,8 @@ variable "node_exporter_version" {
 
 variable "checksums" {
   type        = map(string)
-  description = "SHA-256 of the release tarball for each architecture, from the release's sha256sums.txt. Change these with node_exporter_version."
+  nullable    = false
+  description = "SHA-256 of the release tarball for each architecture, from the release's sha256sums.txt. Change these with node_exporter_version. Null means the default."
   default = {
     amd64 = "b51d8a76aa2a9156a55d501aca6276fae09e262259a5e4e831d2c2222f084e63"
     arm64 = "ad35b605f9954b9f1ffddf5ba054bdc5a98d790b9eae5291e1eeb83f1ecbd0e7"

@@ -83,6 +83,27 @@ jobs:
           scrape
           podman exec circuit-node-exporter systemctl restart node_exporter
           scrape
+      # A fresh host gets the previous release, then the circuit's own pin is
+      # applied over it, the way someone raises node_exporter_version.
+      - name: Upgrade from node_exporter 1.12.0 on a fresh host, then plan again with no changes
+        working-directory: examples/local
+        env:
+          CONTAINERFILE: ${{ github.workspace }}/conn3x/test/images/${{ matrix.distro }}/Containerfile
+        run: |
+          scrape() {
+            curl -fsS --retry 10 --retry-all-errors --retry-delay 1 --max-time 5 -o metrics.txt http://127.0.0.1:9100/metrics
+            grep -q '^node_cpu_seconds_total{' metrics.txt
+            grep -q "^node_exporter_build_info{.*version=\"$1\"" metrics.txt
+          }
+          ./down.sh
+          ./up.sh
+          conn3x init
+          conn3x apply -auto-approve -var node_exporter_version=1.12.0 \
+            -var 'checksums={amd64="b206d98e98a431f2687d4c217abb4b15c46a6b272896113ce9a1585cf1a75d1f",arm64="4ea211ce95224acb7f7c932693cb25f91f7fbe202c86bf6dc943c8569b3f6bac"}'
+          scrape 1.12.0
+          conn3x apply -auto-approve
+          conn3x plan -detailed-exitcode
+          scrape "$(sed -n '/variable "node_exporter_version"/,/}/s/^ *default *= *"\(.*\)"/\1/p' ../../variables.tf)"
       - name: Clean up
         if: always()
         working-directory: examples/local
