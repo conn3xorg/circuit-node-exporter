@@ -17,6 +17,12 @@ locals {
   goarch  = { x86_64 = "amd64", aarch64 = "arm64" }
   release = { for name, f in data.conn3x_host.facts : name => "node_exporter-${var.node_exporter_version}.linux-${local.goarch[f.arch]}" }
   arch    = { for name, f in data.conn3x_host.facts : name => local.goarch[f.arch] }
+
+  # Each flag quoted for systemd, so a space stays inside its argument and
+  # systemd doesn't expand a % specifier or a $ variable in it.
+  flags = join(" ", [for a in concat(["--web.listen-address=:${var.listen_port}"], var.extra_args) :
+    "\"${replace(replace(replace(replace(a, "\\", "\\\\"), "\"", "\\\""), "%", "%%"), "$", "$$")}\""
+  ])
 }
 
 circuit "node_exporter" {
@@ -85,7 +91,7 @@ circuit "node_exporter" {
         [Service]
         User=node_exporter
         Group=node_exporter
-        ExecStart=${join(" ", concat(["/opt/node_exporter/${local.release[each.key]}/node_exporter", "--web.listen-address=:${var.listen_port}"], var.extra_args))}
+        ExecStart=/opt/node_exporter/${local.release[each.key]}/node_exporter ${local.flags}
         Restart=on-failure
         NoNewPrivileges=true
         ProtectSystem=strict

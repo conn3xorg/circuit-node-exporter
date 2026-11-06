@@ -1,12 +1,14 @@
 # circuit-node-exporter
 
+[![Conn3x grade](https://conn3x.org/circuits/node-exporter/grade.svg)](https://conn3x.org/circuits/node-exporter/grade)
+
 A Conn3x circuit that installs the Prometheus [node_exporter](https://github.com/prometheus/node_exporter) on your hosts and keeps it running. It downloads a pinned release, checks its SHA-256 before using it, and runs it as its own `node_exporter` user under systemd. x86_64 and arm64 hosts each get the right build.
 
 ## Usage
 
 ```hcl
 module "node_exporter" {
-  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.0"
+  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.2"
 
   hosts = {
     web1 = "203.0.113.10"
@@ -24,7 +26,7 @@ For hosts created in the same plan, pass host objects with the host key you gene
 
 ```hcl
 module "node_exporter" {
-  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.0"
+  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.2"
 
   hosts = {
     for name, d in digitalocean_droplet.app : name => {
@@ -61,7 +63,7 @@ Set `node_exporter_version` and `checksums` together. Take both checksums from t
 
 ```hcl
 module "node_exporter" {
-  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.0"
+  source = "github.com/conn3xorg/circuit-node-exporter?ref=v0.1.2"
 
   hosts                 = { web1 = "203.0.113.10" }
   node_exporter_version = "1.12.1"
@@ -87,7 +89,7 @@ The new release unpacks beside the old one, the unit file points at it, and the 
 | `node_exporter_version` | string | `"1.12.1"` | node_exporter release to install, without the leading `v`. |
 | `checksums` | map(string) | The 1.12.1 checksums | SHA-256 of the release tarball for `amd64` and `arm64`. |
 | `listen_port` | number | `9100` | Port node_exporter listens on, on every address. |
-| `extra_args` | list(string) | `[]` | More node_exporter flags, such as `["--collector.systemd"]`. |
+| `extra_args` | list(string) | `[]` | More node_exporter flags, such as `["--collector.systemd"]`. Each one is passed as a single argument, as written. |
 
 ## Outputs
 
@@ -101,7 +103,7 @@ Requires Conn3x v0.6.4 or later, systemd on each host, and outbound HTTPS to git
 
 ## Tested on
 
-Rocky Linux 10, Fedora 45, Ubuntu 24.04 and Debian 13. CI applies [examples/local](examples/local) to each on amd64 and checks that the second plan has no changes.
+Rocky Linux 10, Fedora 45, Ubuntu 24.04 and Debian 13. CI applies [examples/local](examples/local) to each on amd64, checks that the second plan has no changes, and scrapes the metrics from outside the host, before and after a restart.
 
 It was also applied by hand, with six other circuits, to an Ubuntu 24.04 droplet and a Rocky Linux 10 droplet with SELinux enforcing. On both, node_exporter ran under systemd, served metrics on port 9100, and circuit-monitoring's Prometheus scraped it through the Docker bridge. After a reboot it came back, the plan had no changes and the audit log had no SELinux denials. The same checks passed on Fedora 44, with SELinux enforcing, and Debian 13 droplets, before and after a reboot.
 
