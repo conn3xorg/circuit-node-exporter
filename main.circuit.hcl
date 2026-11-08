@@ -20,6 +20,7 @@ locals {
 
   # Each flag quoted for systemd, so a space stays inside its argument and
   # systemd doesn't expand a % specifier or a $ variable in it.
+  # conn3x-lint:ignore C3X003 Prometheus scrapes from another host, and the metrics URL output uses the host's address; open the port only to Prometheus
   flags = join(" ", [for a in concat(["--web.listen-address=:${var.listen_port}"], var.extra_args) :
     "\"${replace(replace(replace(replace(a, "\\", "\\\\"), "\"", "\\\""), "%", "%%"), "$", "$$")}\""
   ])
